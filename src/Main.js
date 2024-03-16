@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useUserWallets } from "@dynamic-labs/sdk-react-core";
+import { createWalletClient, createPublicClient, custom } from "viem";
 
 import { ChainId } from "@biconomy/core-types";
 
@@ -14,8 +15,22 @@ const Main = ({ provider, setProvider, signer, setSigner }) => {
         });
       }
 
-      const newProvider = await embeddedWallet.connector?.getPublicClient();
-      const newSigner = await embeddedWallet.connector?.ethers?.getSigner();
+      const internalWalletClient =
+        await embeddedWallet.connector.getWalletClient();
+
+      const walletClient = createWalletClient({
+        chain: internalWalletClient.chain,
+        transport: custom(internalWalletClient.transport),
+        account: embeddedWallet?.address,
+      });
+      const publicClient = createPublicClient({
+        account: embeddedWallet?.address,
+        chain: internalWalletClient.chain,
+        transport: custom(internalWalletClient.transport),
+      });
+
+      const newProvider = publicClient;
+      const newSigner = walletClient;
 
       setProvider(newProvider);
       setSigner(newSigner);

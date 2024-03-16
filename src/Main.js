@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useUserWallets } from "@dynamic-labs/sdk-react-core";
-import { createWalletClient, createPublicClient, custom } from "viem";
 
 import { ChainId } from "@biconomy/core-types";
 
@@ -9,28 +8,15 @@ const Main = ({ provider, setProvider, signer, setSigner }) => {
 
   useEffect(() => {
     const fetchClients = async (embeddedWallet) => {
-      if (embeddedWallet.chain !== ChainId.GOERLI) {
+      if (embeddedWallet.chain !== ChainId.CHILIZ_TESTNET) {
         await embeddedWallet.connector.switchNetwork({
-          networkChainId: ChainId.GOERLI,
+          networkChainId: ChainId.CHILIZ_TESTNET,
         });
       }
 
-      const internalWalletClient =
-        await embeddedWallet.connector.getWalletClient();
+      const newProvider = embeddedWallet.connector.ethers?.getWeb3Provider();
 
-      const walletClient = createWalletClient({
-        chain: internalWalletClient.chain,
-        transport: custom(internalWalletClient.transport),
-        account: embeddedWallet?.address,
-      });
-      const publicClient = createPublicClient({
-        account: embeddedWallet?.address,
-        chain: internalWalletClient.chain,
-        transport: custom(internalWalletClient.transport),
-      });
-
-      const newProvider = publicClient;
-      const newSigner = walletClient;
+      const newSigner =  await embeddedWallet.connector.ethers?.getSigner();
 
       setProvider(newProvider);
       setSigner(newSigner);

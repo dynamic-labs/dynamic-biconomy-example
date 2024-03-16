@@ -29,13 +29,10 @@ function App() {
     };
 
     if (provider && signer && !smartAccount) {
+      console.log("creating smart account");
       createAndSetSmartAccount();
     }
   }, [provider, signer, smartAccount]);
-
-  console.log("provider", provider);
-  console.log("signer", signer);
-  console.log("smartAccount", smartAccount);
 
   useEffect(() => {
     const getBalanceAndAddress = async () => {
@@ -61,6 +58,21 @@ function App() {
             ZeroDevSmartWalletConnectors,
           ],
           walletConnectorExtensions: [EthersExtension],
+          evmNetworks: [
+            {
+              blockExplorerUrls: ['https://testnet.chiliscan.com/'],
+              chainId: 88882,
+              name: 'Chiliz testnet',
+              iconUrls: ['https://app.dynamic.xyz/assets/networks/eth.svg'],
+              nativeCurrency: { decimals: 18, name: 'CHZ', symbol: 'CHZ' },
+              networkId: 88882,
+              privateCustomerRpcUrls: [
+                'https://spicy-rpc.chiliz.com/',
+              ],
+              rpcUrls: ['https://spicy-rpc.chiliz.com/'],
+              vanityName: 'Chiliz testnet'
+            }
+          ]
         }}
       >
         <DynamicWidget />

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
-import { createSmartAccount } from "./Biconomy.js";
+import { createSmartAccount } from "./biconomy.js";
 
 export function useBiconomyAccount() {
   const { primaryWallet } = useDynamicContext();

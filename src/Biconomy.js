@@ -1,24 +1,14 @@
 import { Bundler } from "@biconomy/bundler";
-import { BiconomyPaymaster } from "@biconomy/paymaster";
-import { ChainId } from "@biconomy/core-types";
-
-import {
-  ECDSAOwnershipValidationModule,
-  DEFAULT_ECDSA_OWNERSHIP_MODULE,
-} from "@biconomy/modules";
-
-import {
-  BiconomySmartAccountV2,
-  DEFAULT_ENTRYPOINT_ADDRESS,
-} from "@biconomy/account";
+import { Paymaster, createSmartAccountClient, DEFAULT_ENTRYPOINT_ADDRESS, ECDSAOwnershipValidationModule, DEFAULT_ECDSA_OWNERSHIP_MODULE } from "@biconomy/account";
+import { sepolia } from "viem/chains";
 
 const bundler = new Bundler({
   bundlerUrl: process.env.REACT_APP_BICONOMY_BUNDLER_URL,
-  chainId: ChainId.GOERLI, // Replace this with your desired network
+  chainId: sepolia.id, // Replace this with your desired network
   entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS, // This is a Biconomy constant
 });
 
-const paymaster = new BiconomyPaymaster({
+const paymaster = new Paymaster({
   paymasterUrl: process.env.REACT_APP_BICONOMY_PAYMASTER_URL,
 });
 
@@ -29,12 +19,13 @@ const createValidationModule = async (signer) => {
   });
 };
 
-export const createSmartAccount = async (provider, signer) => {
-  const validationModule = await createValidationModule(signer);
+export const createSmartAccount = async (walletClient) => {
+  const validationModule = await createValidationModule(walletClient);
+  console.log('creating')
 
-  return await BiconomySmartAccountV2.create({
-    provider: provider, // This can be any ethers JsonRpcProvider connected to your app's network
-    chainId: ChainId.GOERLI, // Replace this with your target network
+  return await createSmartAccountClient({
+    signer: walletClient,
+    chainId: sepolia.id, // Replace this with your target network
     bundler: bundler, // Use the `bundler` we initialized above
     paymaster: paymaster, // Use the `paymaster` we initialized above
     entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS, // This is a Biconomy constant
